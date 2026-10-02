@@ -135,5 +135,26 @@ namespace Laba_1
                 UpdateEnemiesList();
             }
         }
+
+        // Обработчик выбора противника в левом списке
+        private void EnemiesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (EnemiesListBox.SelectedItem != null)
+            {
+                string selectedName = EnemiesListBox.SelectedItem.ToString();
+                CEnemyTemplate enemy = enemyList.GetEnemyByName(selectedName);
+
+                if (enemy != null)
+                {
+                    NameTextBox.Text = enemy.Name;
+                    IconNameTextBox.Text = enemy.IconName;
+                    BaseLifeTextBox.Text = enemy.BaseLife.ToString();
+                    LifeModifierTextBox.Text = enemy.LifeModifier.ToString();
+                    BaseGoldTextBox.Text = enemy.BaseGold.ToString();
+                    GoldModifierTextBox.Text = enemy.GoldModifier.ToString();
+                    SpawnChanceTextBox.Text = enemy.SpawnChance.ToString();
+                }
+            }
+        }
     }
 }
