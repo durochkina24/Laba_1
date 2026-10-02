@@ -112,6 +112,28 @@ namespace Laba_1
                 EnemiesListBox.Items.Add(name);
             }
         }
-        
+
+        // 5. Сохранение в JSON
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "JSON files (*.json)|*.json";
+            if (dlg.ShowDialog() == true)
+            {
+                enemyList.SaveToJson(dlg.FileName);
+            }
+        }
+
+        // 6. Загрузка из JSON
+        private void LoadButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "JSON files (*.json)|*.json";
+            if (dlg.ShowDialog() == true)
+            {
+                enemyList.LoadFromJson(dlg.FileName);
+                UpdateEnemiesList();
+            }
+        }
     }
 }
