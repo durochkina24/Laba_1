@@ -70,6 +70,48 @@ namespace Laba_1
                 MainEnemyIcon.Source = selectedImage.Source;
             }
         }
+
+        // 3. Добавление противника
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                enemyList.AddEnemy(
+                    NameTextBox.Text,
+                    IconNameTextBox.Text,
+                    int.Parse(BaseLifeTextBox.Text),
+                    double.Parse(LifeModifierTextBox.Text),
+                    int.Parse(BaseGoldTextBox.Text),
+                    double.Parse(GoldModifierTextBox.Text),
+                    double.Parse(SpawnChanceTextBox.Text)
+                );
+                UpdateEnemiesList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Проверьте правильность ввода данных: " + ex.Message);
+            }
+        }
+
+        // 4. Удаление противника
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (EnemiesListBox.SelectedItem != null)
+            {
+                string selectedName = EnemiesListBox.SelectedItem.ToString();
+                enemyList.DeleteEnemyByName(selectedName);
+                UpdateEnemiesList();
+            }
+        }
+
+        private void UpdateEnemiesList()
+        {
+            EnemiesListBox.Items.Clear();
+            foreach (string name in enemyList.GetListOfEnemyNames())
+            {
+                EnemiesListBox.Items.Add(name);
+            }
+        }
         
     }
 }
