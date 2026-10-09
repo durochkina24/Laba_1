@@ -24,5 +24,24 @@ namespace Laba_1
             GoldModifier = goldModifier;
             SpawnChance = spawnChance;
         }
+
+        // Метод для обновления характеристик врага
+        public void Update(string name, string iconName, int baseLife,
+                           double lifeModifier, int baseGold,
+                           double goldModifier, double spawnChance)
+        {
+            Name = name;
+            IconName = iconName;
+            BaseLife = baseLife;
+            LifeModifier = lifeModifier;
+            BaseGold = baseGold;
+            GoldModifier = goldModifier;
+            SpawnChance = spawnChance;
+        }
+        public void NormalizeChance(double sum)
+        {
+            if (sum > 0)
+                SpawnChance /= sum;
+        }
     }
 }

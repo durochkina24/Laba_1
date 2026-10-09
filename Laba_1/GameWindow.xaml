@@ -1,0 +1,52 @@
+﻿<Window x:Class="Laba_1.GameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Кликер" Height="500" Width="850">
+    <Grid Background="#BFE3FF">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Левая панель — враг -->
+        <StackPanel Grid.Column="0" Margin="20">
+            <TextBlock Text="Имя противника:" FontWeight="Bold"/>
+            <TextBlock x:Name="EnemyNameText" FontSize="20"/>
+
+            <TextBlock Text="Здоровье:" FontWeight="Bold" Margin="0,20,0,0"/>
+            <TextBlock x:Name="EnemyHpText" FontSize="20"/>
+
+            <TextBlock Text="Золото за победу:" FontWeight="Bold" Margin="0,20,0,0"/>
+            <TextBlock x:Name="EnemyGoldText" FontSize="20"/>
+        </StackPanel>
+
+        <!-- Центр — иконка, по ней клик -->
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <Image x:Name="EnemyImage" Width="220" Height="220"
+                   MouseLeftButtonDown="EnemyImage_MouseLeftButtonDown"
+                   Cursor="Hand"/>
+            <TextBlock Text="Кликни по врагу, чтобы нанести урон"
+                       HorizontalAlignment="Center" Margin="0,10,0,0"/>
+        </StackPanel>
+
+        <!-- Правая панель — игрок -->
+        <StackPanel Grid.Column="2" Margin="20">
+            <TextBlock Text="Уровень:" FontWeight="Bold"/>
+            <TextBlock x:Name="LevelText" FontSize="20"/>
+
+            <TextBlock Text="Золото игрока:" FontWeight="Bold" Margin="0,20,0,0"/>
+            <TextBlock x:Name="GoldText" FontSize="20"/>
+
+            <TextBlock Text="Урон игрока:" FontWeight="Bold" Margin="0,20,0,0"/>
+            <TextBlock x:Name="DamageText" FontSize="20"/>
+
+            <TextBlock Text="Стоимость апгрейда:" FontWeight="Bold" Margin="0,20,0,0"/>
+            <TextBlock x:Name="UpgradeCostText" FontSize="20"/>
+
+            <Button x:Name="UpgradeButton" Content="Улучшить урон"
+                    Margin="0,30,0,0" Height="40"
+                    Click="UpgradeButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
