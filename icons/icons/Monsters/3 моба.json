@@ -1,0 +1,29 @@
+[
+  {
+    "Name": "\u0433\u043E\u0431\u043B\u0435\u043D \u043C\u0430\u043B\u044B\u0439",
+    "IconName": "goblin_1.png",
+    "BaseLife": 100,
+    "LifeModifier": 1.2,
+    "BaseGold": 100,
+    "GoldModifier": 2,
+    "SpawnChance": 0.375
+  },
+  {
+    "Name": "\u0441\u043A\u0435\u043B\u0435\u0442\u043E\u043D\u0447\u0438\u043A",
+    "IconName": "skeleton_1.png",
+    "BaseLife": 200,
+    "LifeModifier": 1.3,
+    "BaseGold": 200,
+    "GoldModifier": 1,
+    "SpawnChance": 0.5
+  },
+  {
+    "Name": "\u0441\u043A\u0435\u043B\u0435\u0442\u043E\u043D\u0447\u0438\u043A \u043C\u0430\u0433",
+    "IconName": "skeleton_2.png",
+    "BaseLife": 250,
+    "LifeModifier": 1.5,
+    "BaseGold": 250,
+    "GoldModifier": 2,
+    "SpawnChance": 0.125
+  }
+]

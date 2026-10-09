@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 
 namespace Laba_1
@@ -12,26 +13,24 @@ namespace Laba_1
             enemies = new List<CEnemyTemplate>();
         }
 
-        public void AddEnemy(string name, string iconName, int baseLife, double lifeModifier, int baseGold, double goldModifier, double spawnChance)
+        public int Count => enemies.Count;
+        public List<CEnemyTemplate> GetAll() => enemies;
+
+        public void AddEnemy(string name, string iconName, int baseLife,
+            double lifeModifier, int baseGold, double goldModifier, double spawnChance)
         {
-            enemies.Add(new CEnemyTemplate(name, iconName, baseLife, lifeModifier, baseGold, goldModifier, spawnChance));
+            enemies.Add(new CEnemyTemplate(name, iconName, baseLife,
+                lifeModifier, baseGold, goldModifier, spawnChance));
         }
 
         public CEnemyTemplate GetEnemyByName(string name)
-        {
-            return enemies.Find(e => e.Name == name);
-        }
+            => enemies.Find(e => e.Name == name);
 
         public CEnemyTemplate GetEnemyByIndex(int id)
-        {
-            if (id >= 0 && id < enemies.Count) return enemies[id];
-            return null;
-        }
+            => (id >= 0 && id < enemies.Count) ? enemies[id] : null;
 
         public void DeleteEnemyByName(string name)
-        {
-            enemies.RemoveAll(e => e.Name == name);
-        }
+            => enemies.RemoveAll(e => e.Name == name);
 
         public void DeleteEnemyByIndex(int id)
         {
@@ -40,34 +39,50 @@ namespace Laba_1
 
         public List<string> GetListOfEnemyNames()
         {
-            List<string> names = new List<string>();
-            foreach (var enemy in enemies) names.Add(enemy.Name);
+            var names = new List<string>();
+            foreach (var e in enemies) names.Add(e.Name);
             return names;
         }
 
+        // ---------- Нормализация шансов ----------
+        public void NormalizeChances()
+        {
+            if (enemies.Count == 0) return;
+            double sum = 0;
+            foreach (var e in enemies) sum += e.SpawnChance;
+            if (sum <= 0) return;
+            foreach (var e in enemies) e.NormalizeChance(sum);
+        }
+
+        // ---------- Выбор случайного шаблона по накопленной вероятности ----------
+        public CEnemyTemplate FindByChance(double chance)
+        {
+            double sum = 0;
+            foreach (var e in enemies)
+            {
+                sum += e.SpawnChance;
+                if (sum >= chance) return e;
+            }
+            return enemies.Count > 0 ? enemies[enemies.Count - 1] : null;
+        }
+
+        // ---------- JSON ----------
         public void SaveToJson(string path)
         {
-            string jsonString = JsonSerializer.Serialize(enemies);
-            File.WriteAllText(path, jsonString);
+            string json = JsonSerializer.Serialize(enemies,
+                new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, json);
         }
 
         public void LoadFromJson(string path)
         {
-            string jsonFromFile = File.ReadAllText(path);
-            JsonDocument doc = JsonDocument.Parse(jsonFromFile);
-            enemies.Clear();
-
-            foreach (JsonElement element in doc.RootElement.EnumerateArray())
+            if (!File.Exists(path)) return;
+            string json = File.ReadAllText(path);
+            var loaded = JsonSerializer.Deserialize<List<CEnemyTemplate>>(json);
+            if (loaded != null)
             {
-                string name = element.GetProperty("Name").GetString();
-                string iconName = element.GetProperty("IconName").GetString();
-                int baseLife = element.GetProperty("BaseLife").GetInt32();
-                double lifeModifier = element.GetProperty("LifeModifier").GetDouble();
-                int baseGold = element.GetProperty("BaseGold").GetInt32();
-                double goldModifier = element.GetProperty("GoldModifier").GetDouble();
-                double spawnChance = element.GetProperty("SpawnChance").GetDouble();
-
-                enemies.Add(new CEnemyTemplate(name, iconName, baseLife, lifeModifier, baseGold, goldModifier, spawnChance));
+                enemies = loaded;
+                NormalizeChances();
             }
         }
     }

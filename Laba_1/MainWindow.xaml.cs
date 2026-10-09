@@ -22,7 +22,9 @@ namespace Laba_1
         // 1. Загрузка иконок из папки
         private void LoadIconsButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFolderDialog();
+            var dialog = new Microsoft.Win32.OpenFolderDialog();
+            dialog.Title = "Выберите папку с иконками";
+
             if (dialog.ShowDialog() == true)
             {
                 LoadIconsFromFolder(dialog.FolderName);
@@ -31,8 +33,7 @@ namespace Laba_1
 
         public void LoadIconsFromFolder(string path)
         {
-            string filter = "*.png";
-            string[] files = Directory.GetFiles(path, filter);
+            string[] files = Directory.GetFiles(path, "*.png");
 
             enemyIcons.Clear();
             IconsListBox.Items.Clear();
@@ -46,27 +47,27 @@ namespace Laba_1
                 };
                 enemyIcons.Add(icon);
 
-                // Отображение в ListBox
                 Image image = new Image
                 {
-                    Source = new BitmapImage(new Uri(icon.ImagePath)),
+                    Source = new BitmapImage(new Uri(icon.ImagePath, UriKind.Absolute)),
                     Height = 64
                 };
                 IconsListBox.Items.Add(image);
+            }
+
+            if (files.Length == 0)
+            {
+                MessageBox.Show("В выбранной папке нет .png файлов");
             }
         }
 
         // 2. Обработка выбора иконки
         private void IconsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ListBox iconHolder = sender as ListBox;
-            if (iconHolder.SelectedItem is Image selectedImage && iconHolder.SelectedItem != null)
+            if (IconsListBox.SelectedItem is Image selectedImage)
             {
-                // Получение имени файла из пути
                 string iconName = Path.GetFileName(selectedImage.Source.ToString());
                 IconNameTextBox.Text = iconName;
-
-                // Отображение главной иконки
                 MainEnemyIcon.Source = selectedImage.Source;
             }
         }
@@ -85,6 +86,62 @@ namespace Laba_1
                     double.Parse(GoldModifierTextBox.Text),
                     double.Parse(SpawnChanceTextBox.Text)
                 );
+                UpdateEnemiesList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Проверьте правильность ввода данных: " + ex.Message);
+            }
+        }
+
+        // 3.5. Обновление (редактирование) противника
+        private void UpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (EnemiesListBox.SelectedItem == null)
+            {
+                MessageBox.Show("Выберите противника из списка");
+                return;
+            }
+
+            string oldName = EnemiesListBox.SelectedItem.ToString();
+            CEnemyTemplate enemy = enemyList.GetEnemyByName(oldName);
+
+            if (enemy == null)
+            {
+                MessageBox.Show("Противник не найден");
+                return;
+            }
+
+            try
+            {
+                // Если имя изменилось — удаляем старого и добавляем нового
+                if (enemy.Name != NameTextBox.Text)
+                {
+                    enemyList.DeleteEnemyByName(oldName);
+                    enemyList.AddEnemy(
+                        NameTextBox.Text,
+                        IconNameTextBox.Text,
+                        int.Parse(BaseLifeTextBox.Text),
+                        double.Parse(LifeModifierTextBox.Text),
+                        int.Parse(BaseGoldTextBox.Text),
+                        double.Parse(GoldModifierTextBox.Text),
+                        double.Parse(SpawnChanceTextBox.Text)
+                    );
+                }
+                else
+                {
+                    // Имя не менялось — обновляем через метод Update
+                    enemy.Update(
+                        NameTextBox.Text,
+                        IconNameTextBox.Text,
+                        int.Parse(BaseLifeTextBox.Text),
+                        double.Parse(LifeModifierTextBox.Text),
+                        int.Parse(BaseGoldTextBox.Text),
+                        double.Parse(GoldModifierTextBox.Text),
+                        double.Parse(SpawnChanceTextBox.Text)
+                    );
+                }
+
                 UpdateEnemiesList();
             }
             catch (Exception ex)
@@ -155,6 +212,19 @@ namespace Laba_1
                     SpawnChanceTextBox.Text = enemy.SpawnChance.ToString();
                 }
             }
+        }
+
+        // 7. Кнопка "Играть" — открывает окно кликера
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (enemyList.Count == 0)
+            {
+                MessageBox.Show("Сначала добавьте хотя бы одного противника.");
+                return;
+            }
+
+            GameWindow game = new GameWindow(enemyList, enemyIcons);
+            game.Show();
         }
     }
 }
