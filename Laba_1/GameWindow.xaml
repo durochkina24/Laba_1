@@ -1,52 +1,68 @@
 ﻿<Window x:Class="Laba_1.GameWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Кликер" Height="500" Width="850">
-    <Grid Background="#BFE3FF">
+        Title="Кликер" Height="650" Width="1100" Background="#E6F2FF">
+    <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="350"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="350"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Левая панель — враг -->
-        <StackPanel Grid.Column="0" Margin="20">
-            <TextBlock Text="Имя противника:" FontWeight="Bold"/>
-            <TextBlock x:Name="EnemyNameText" FontSize="20"/>
+        <!-- ЛЕВАЯ ПАНЕЛЬ: Информация о враге и полоска HP -->
+        <StackPanel Grid.Column="0" Margin="20" VerticalAlignment="Top">
+            <TextBlock x:Name="EnemyNameText" FontSize="24" FontWeight="Bold" Text="Имя врага" Margin="0,0,0,10"/>
 
-            <TextBlock Text="Здоровье:" FontWeight="Bold" Margin="0,20,0,0"/>
-            <TextBlock x:Name="EnemyHpText" FontSize="20"/>
+            <!-- Полоска здоровья -->
+            <Border Background="#FFCDD2" Height="30" CornerRadius="5" BorderBrush="#B71C1C" BorderThickness="2">
+                <Grid>
+                    <Rectangle x:Name="HpBarFill" Fill="#F44336" HorizontalAlignment="Left" RadiusX="3" RadiusY="3"/>
+                    <TextBlock x:Name="EnemyHpText" Text="100 / 100" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="16"/>
+                </Grid>
+            </Border>
 
-            <TextBlock Text="Золото за победу:" FontWeight="Bold" Margin="0,20,0,0"/>
-            <TextBlock x:Name="EnemyGoldText" FontSize="20"/>
+            <TextBlock Text="Золото за победу:" FontWeight="Bold" Margin="0,30,0,0" FontSize="16"/>
+            <TextBlock x:Name="EnemyGoldText" FontSize="20" Foreground="#FF8F00" Margin="0,5,0,0"/>
+
+            <!-- Активные эффекты -->
+            <TextBlock x:Name="BonusStatusText" FontSize="16" Foreground="#D32F2F" FontWeight="Bold" Margin="0,30,0,0"/>
         </StackPanel>
 
-        <!-- Центр — иконка, по ней клик -->
-        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-            <Image x:Name="EnemyImage" Width="220" Height="220"
-                   MouseLeftButtonDown="EnemyImage_MouseLeftButtonDown"
-                   Cursor="Hand"/>
-            <TextBlock Text="Кликни по врагу, чтобы нанести урон"
-                       HorizontalAlignment="Center" Margin="0,10,0,0"/>
-        </StackPanel>
+        <!-- ЦЕНТРАЛЬНАЯ ПАНЕЛЬ: Моб и сферы -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
 
-        <!-- Правая панель — игрок -->
-        <StackPanel Grid.Column="2" Margin="20">
+            <Grid Grid.Row="0">
+                <Image x:Name="EnemyImage" Width="300" Height="300" Cursor="Hand"/>
+                <Canvas x:Name="GameCanvas" ClipToBounds="True"/>
+            </Grid>
+
+            <!-- Индикатор перезарядки снизу -->
+            <TextBlock Grid.Row="1" x:Name="CooldownText" Text="ГОТОВ К УДАРУ" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" FontWeight="Bold" Foreground="#4CAF50"/>
+        </Grid>
+
+        <!-- ПРАВАЯ ПАНЕЛЬ: Характеристики и Апгрейды -->
+        <StackPanel Grid.Column="2" Margin="20" VerticalAlignment="Top">
             <TextBlock Text="Уровень:" FontWeight="Bold"/>
             <TextBlock x:Name="LevelText" FontSize="20"/>
 
-            <TextBlock Text="Золото игрока:" FontWeight="Bold" Margin="0,20,0,0"/>
-            <TextBlock x:Name="GoldText" FontSize="20"/>
+            <TextBlock Text="Ваше золото:" FontWeight="Bold" Margin="0,15,0,0"/>
+            <TextBlock x:Name="GoldText" FontSize="24" Foreground="#FF8F00"/>
 
-            <TextBlock Text="Урон игрока:" FontWeight="Bold" Margin="0,20,0,0"/>
-            <TextBlock x:Name="DamageText" FontSize="20"/>
+            <TextBlock Text="Ваш урон:" FontWeight="Bold" Margin="0,15,0,0"/>
+            <TextBlock x:Name="DamageText" FontSize="20" Foreground="#1976D2"/>
 
-            <TextBlock Text="Стоимость апгрейда:" FontWeight="Bold" Margin="0,20,0,0"/>
-            <TextBlock x:Name="UpgradeCostText" FontSize="20"/>
+            <Button Content="Улучшить урон" Click="UpgradeButton_Click" Height="40" Margin="0,10,0,0" Background="#E3F2FD"/>
+            <TextBlock x:Name="UpgradeCostText" Margin="0,5,0,20" HorizontalAlignment="Center"/>
 
-            <Button x:Name="UpgradeButton" Content="Улучшить урон"
-                    Margin="0,30,0,0" Height="40"
-                    Click="UpgradeButton_Click"/>
+            <TextBlock Text="Перезарядка:" FontWeight="Bold"/>
+            <TextBlock x:Name="CooldownTimeText" FontSize="20" Foreground="#1976D2"/>
+
+            <Button Content="Ускорить атаку (-10%)" Click="UpgradeCooldown_Click" Height="40" Margin="0,10,0,0" Background="#E3F2FD"/>
+            <TextBlock x:Name="CooldownCostText" Margin="0,5,0,0" HorizontalAlignment="Center"/>
         </StackPanel>
     </Grid>
 </Window>

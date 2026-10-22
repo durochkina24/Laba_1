@@ -6,7 +6,9 @@ namespace Laba_1
     public class BigNumber
     {
         private const int Base = 1000;
-        private int[] number; // младший разряд в конце
+        //Сложение BigNumber идёт справа налево, по блокам.
+        //На каждом шаге складываются блоки двух чисел плюс перенос с прошлого шага.
+        private int[] number; 
 
         public BigNumber(string value)
         {
@@ -82,7 +84,7 @@ namespace Laba_1
             return new BigNumber(result);
         }
 
-        // Сколько блоков займёт число multiplier в системе с основанием Base
+        
         private static int CountBlocks(long value)
         {
             if (value == 0) return 1;
@@ -99,8 +101,7 @@ namespace Laba_1
         {
             if (multiplier == 0) return BigNumber.Zero;
 
-            // Заранее считаем, сколько блоков понадобится:
-            // длина числа + длина множителя + 1 запас под перенос
+            
             int extraBlocks = CountBlocks(multiplier);
             int[] result = new int[number.Length + extraBlocks + 1];
             long carry = 0;
@@ -115,7 +116,7 @@ namespace Laba_1
             int idx = number.Length;
             while (carry > 0)
             {
-                if (idx >= result.Length) break; // страховка от выхода за границу
+                if (idx >= result.Length) break; 
                 result[result.Length - 1 - idx] = (int)(carry % Base);
                 carry /= Base;
                 idx++;

@@ -14,7 +14,7 @@
     "BaseLife": 200,
     "LifeModifier": 1.3,
     "BaseGold": 200,
-    "GoldModifier": 1,
+    "GoldModifier": 1.5,
     "SpawnChance": 0.5
   },
   {
