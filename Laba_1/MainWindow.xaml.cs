@@ -1,11 +1,9 @@
-﻿using Laba_1;
-using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Microsoft.Win32;
 
 namespace Laba_1
 {
@@ -19,145 +17,133 @@ namespace Laba_1
             InitializeComponent();
         }
 
-        // 1. Загрузка иконок из папки
         private void LoadIconsButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new Microsoft.Win32.OpenFolderDialog();
-            dialog.Title = "Выберите папку с иконками";
-
+            var dialog = new OpenFolderDialog();
             if (dialog.ShowDialog() == true)
             {
-                LoadIconsFromFolder(dialog.FolderName);
+                string[] files = System.IO.Directory.GetFiles(dialog.FolderName, "*.png");
+                enemyIcons.Clear();
+                IconsListBox.Items.Clear();
+
+                foreach (string file in files)
+                {
+                    EnemyIcon icon = new EnemyIcon { Name = System.IO.Path.GetFileName(file), ImagePath = file };
+                    enemyIcons.Add(icon);
+                    Image image = new Image { Source = new BitmapImage(new Uri(icon.ImagePath)), Height = 64 };
+                    IconsListBox.Items.Add(image);
+                }
             }
         }
 
-        public void LoadIconsFromFolder(string path)
-        {
-            string[] files = Directory.GetFiles(path, "*.png");
-
-            enemyIcons.Clear();
-            IconsListBox.Items.Clear();
-
-            foreach (string file in files)
-            {
-                EnemyIcon icon = new EnemyIcon
-                {
-                    Name = Path.GetFileName(file),
-                    ImagePath = file
-                };
-                enemyIcons.Add(icon);
-
-                Image image = new Image
-                {
-                    Source = new BitmapImage(new Uri(icon.ImagePath, UriKind.Absolute)),
-                    Height = 64
-                };
-                IconsListBox.Items.Add(image);
-            }
-
-            if (files.Length == 0)
-            {
-                MessageBox.Show("В выбранной папке нет .png файлов");
-            }
-        }
-
-        // 2. Обработка выбора иконки
         private void IconsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IconsListBox.SelectedItem is Image selectedImage)
             {
-                string iconName = Path.GetFileName(selectedImage.Source.ToString());
+                string iconName = System.IO.Path.GetFileName(selectedImage.Source.ToString());
                 IconNameTextBox.Text = iconName;
                 MainEnemyIcon.Source = selectedImage.Source;
             }
         }
 
-        // 3. Добавление противника
+        private void TypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ArmorLabel == null || ArmorTextBox == null) return;
+
+            string selected = (TypeComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            if (selected == "Бронированный")
+            {
+                ArmorLabel.Visibility = Visibility.Visible;
+                ArmorTextBox.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ArmorLabel.Visibility = Visibility.Collapsed;
+                ArmorTextBox.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        // Вспомогательный метод для безопасного парсинга чисел (и точка, и запятая)
+        private double ParseDouble(string text)
+        {
+            return double.Parse(text.Replace('.', ','));
+        }
+
+        private CEnemyTemplate CreateEnemyFromInputs()
+        {
+            string name = NameTextBox.Text;
+            string icon = IconNameTextBox.Text;
+            int life = int.Parse(BaseLifeTextBox.Text);
+            double lifeMod = ParseDouble(LifeModifierTextBox.Text);
+            int gold = int.Parse(BaseGoldTextBox.Text);
+            double goldMod = ParseDouble(GoldModifierTextBox.Text);
+            double chance = ParseDouble(SpawnChanceTextBox.Text);
+
+            string type = (TypeComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+
+            if (type == "Бронированный")
+            {
+                double armor = ParseDouble(ArmorTextBox.Text);
+                return new CArmoredEnemyTemplate(name, icon, life, lifeMod, gold, goldMod, chance, armor);
+            }
+            else if (type == "Лечащийся")
+            {
+                // Для простоты зададим шанс лечения 30% (0.3)
+                return new CHealingEnemyTemplate(name, icon, life, lifeMod, gold, goldMod, chance, 0.3);
+            }
+            else
+            {
+                return new CNormalEnemyTemplate(name, icon, life, lifeMod, gold, goldMod, chance);
+            }
+        }
+
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                enemyList.AddEnemy(
-                    NameTextBox.Text,
-                    IconNameTextBox.Text,
-                    int.Parse(BaseLifeTextBox.Text),
-                    double.Parse(LifeModifierTextBox.Text),
-                    int.Parse(BaseGoldTextBox.Text),
-                    double.Parse(GoldModifierTextBox.Text),
-                    double.Parse(SpawnChanceTextBox.Text)
-                );
+                enemyList.AddEnemy(CreateEnemyFromInputs());
                 UpdateEnemiesList();
+                MessageBox.Show("Противник успешно добавлен!");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Проверьте правильность ввода данных: " + ex.Message);
+                MessageBox.Show("Проверьте правильность ввода: " + ex.Message);
             }
         }
 
-        // 3.5. Обновление (редактирование) противника
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
             if (EnemiesListBox.SelectedItem == null)
             {
-                MessageBox.Show("Выберите противника из списка");
+                MessageBox.Show("Сначала выберите противника из списка, которого хотите обновить!");
                 return;
             }
 
             string oldName = EnemiesListBox.SelectedItem.ToString();
-            CEnemyTemplate enemy = enemyList.GetEnemyByName(oldName);
-
-            if (enemy == null)
-            {
-                MessageBox.Show("Противник не найден");
-                return;
-            }
 
             try
             {
-                // Если имя изменилось — удаляем старого и добавляем нового
-                if (enemy.Name != NameTextBox.Text)
-                {
-                    enemyList.DeleteEnemyByName(oldName);
-                    enemyList.AddEnemy(
-                        NameTextBox.Text,
-                        IconNameTextBox.Text,
-                        int.Parse(BaseLifeTextBox.Text),
-                        double.Parse(LifeModifierTextBox.Text),
-                        int.Parse(BaseGoldTextBox.Text),
-                        double.Parse(GoldModifierTextBox.Text),
-                        double.Parse(SpawnChanceTextBox.Text)
-                    );
-                }
-                else
-                {
-                    // Имя не менялось — обновляем через метод Update
-                    enemy.Update(
-                        NameTextBox.Text,
-                        IconNameTextBox.Text,
-                        int.Parse(BaseLifeTextBox.Text),
-                        double.Parse(LifeModifierTextBox.Text),
-                        int.Parse(BaseGoldTextBox.Text),
-                        double.Parse(GoldModifierTextBox.Text),
-                        double.Parse(SpawnChanceTextBox.Text)
-                    );
-                }
-
+                enemyList.DeleteEnemyByName(oldName);
+                enemyList.AddEnemy(CreateEnemyFromInputs());
                 UpdateEnemiesList();
+                MessageBox.Show("Противник успешно обновлен!");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Проверьте правильность ввода данных: " + ex.Message);
+                MessageBox.Show("Проверьте правильность ввода: " + ex.Message);
             }
         }
 
-        // 4. Удаление противника
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
             if (EnemiesListBox.SelectedItem != null)
             {
-                string selectedName = EnemiesListBox.SelectedItem.ToString();
-                enemyList.DeleteEnemyByName(selectedName);
+                enemyList.DeleteEnemyByName(EnemiesListBox.SelectedItem.ToString());
                 UpdateEnemiesList();
+            }
+            else
+            {
+                MessageBox.Show("Выберите противника для удаления.");
             }
         }
 
@@ -170,37 +156,46 @@ namespace Laba_1
             }
         }
 
-        // 5. Сохранение в JSON
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Filter = "JSON files (*.json)|*.json";
+            SaveFileDialog dlg = new SaveFileDialog { Filter = "JSON files (*.json)|*.json" };
             if (dlg.ShowDialog() == true)
             {
-                enemyList.SaveToJson(dlg.FileName);
+                try
+                {
+                    enemyList.SaveToJson(dlg.FileName);
+                    MessageBox.Show("Список успешно сохранен!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при сохранении: " + ex.Message);
+                }
             }
         }
 
-        // 6. Загрузка из JSON
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = "JSON files (*.json)|*.json";
+            OpenFileDialog dlg = new OpenFileDialog { Filter = "JSON files (*.json)|*.json" };
             if (dlg.ShowDialog() == true)
             {
-                enemyList.LoadFromJson(dlg.FileName);
-                UpdateEnemiesList();
+                try
+                {
+                    enemyList.LoadFromJson(dlg.FileName);
+                    UpdateEnemiesList();
+                    MessageBox.Show("Список успешно загружен!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при загрузке: " + ex.Message);
+                }
             }
         }
 
-        // Обработчик выбора противника в левом списке
         private void EnemiesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (EnemiesListBox.SelectedItem != null)
             {
-                string selectedName = EnemiesListBox.SelectedItem.ToString();
-                CEnemyTemplate enemy = enemyList.GetEnemyByName(selectedName);
-
+                CEnemyTemplate enemy = enemyList.GetEnemyByName(EnemiesListBox.SelectedItem.ToString());
                 if (enemy != null)
                 {
                     NameTextBox.Text = enemy.Name;
@@ -210,21 +205,32 @@ namespace Laba_1
                     BaseGoldTextBox.Text = enemy.BaseGold.ToString();
                     GoldModifierTextBox.Text = enemy.GoldModifier.ToString();
                     SpawnChanceTextBox.Text = enemy.SpawnChance.ToString();
+
+                    if (enemy is CArmoredEnemyTemplate armored)
+                    {
+                        TypeComboBox.SelectedIndex = 1;
+                        ArmorTextBox.Text = armored.Armor.ToString();
+                    }
+                    else if (enemy is CHealingEnemyTemplate)
+                    {
+                        TypeComboBox.SelectedIndex = 2;
+                    }
+                    else
+                    {
+                        TypeComboBox.SelectedIndex = 0;
+                    }
                 }
             }
         }
 
-        // 7. Кнопка "Играть" — открывает окно кликера
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             if (enemyList.Count == 0)
             {
-                MessageBox.Show("Сначала добавьте хотя бы одного противника.");
+                MessageBox.Show("Сначала добавьте противника.");
                 return;
             }
-
-            GameWindow game = new GameWindow(enemyList, enemyIcons);
-            game.Show();
+            new GameWindow(enemyList, enemyIcons).Show();
         }
     }
 }

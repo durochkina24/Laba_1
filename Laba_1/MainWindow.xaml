@@ -1,76 +1,92 @@
 ﻿<Window x:Class="Laba_1.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Редактор противников" Height="650" Width="900">
-    <Grid Background="#BFE3FF">
+        Title="Редактор противников" Height="750" Width="900" Background="#FFF3E0">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="280"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Margin="10">
-            <TextBlock Text="Список противников:" FontWeight="Bold"/>
-            <ListBox Name="EnemiesListBox" Height="120" Margin="0,5,0,10" SelectionChanged="EnemiesListBox_SelectionChanged"/>
+        <!-- Левая панель -->
+        <StackPanel Grid.Column="0" Margin="15">
+            <TextBlock Text="Список противников:" FontWeight="Bold" FontSize="16" Foreground="#E65100"/>
+            <ListBox Name="EnemiesListBox" Height="120" Margin="0,5,0,15" SelectionChanged="EnemiesListBox_SelectionChanged"
+                     BorderBrush="#FFB74D" Background="White"/>
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="140"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="Имя противника:"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Name="NameTextBox"/>
+                <TextBlock Grid.Row="0" Text="Имя противника:" VerticalAlignment="Center" Foreground="#E65100"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Name="NameTextBox" BorderBrush="#FFB74D" Padding="2"/>
 
-                <TextBlock Grid.Row="1" Text="Имя иконки:"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Name="IconNameTextBox" IsReadOnly="True"/>
+                <TextBlock Grid.Row="1" Text="Имя иконки:" VerticalAlignment="Center" Foreground="#E65100"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Name="IconNameTextBox" IsReadOnly="True" BorderBrush="#FFB74D" Background="#FFF8E1" Padding="2"/>
 
-                <TextBlock Grid.Row="2" Text="Базовое здоровье:"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Name="BaseLifeTextBox"/>
+                <TextBlock Grid.Row="2" Text="Базовое здоровье:" VerticalAlignment="Center" Foreground="#E65100"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Name="BaseLifeTextBox" BorderBrush="#FFB74D" Padding="2"/>
 
-                <TextBlock Grid.Row="3" Text="Модиф здоровья:"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Name="LifeModifierTextBox"/>
+                <TextBlock Grid.Row="3" Text="Модиф здоровья:" VerticalAlignment="Center" Foreground="#E65100"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Name="LifeModifierTextBox" BorderBrush="#FFB74D" Padding="2"/>
 
-                <TextBlock Grid.Row="4" Text="Базовое золото:"/>
-                <TextBox Grid.Row="4" Grid.Column="1" Name="BaseGoldTextBox"/>
+                <TextBlock Grid.Row="4" Text="Базовое золото:" VerticalAlignment="Center" Foreground="#E65100"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Name="BaseGoldTextBox" BorderBrush="#FFB74D" Padding="2"/>
 
-                <TextBlock Grid.Row="5" Text="Модиф золота:"/>
-                <TextBox Grid.Row="5" Grid.Column="1" Name="GoldModifierTextBox"/>
+                <TextBlock Grid.Row="5" Text="Модиф золота:" VerticalAlignment="Center" Foreground="#E65100"/>
+                <TextBox Grid.Row="5" Grid.Column="1" Name="GoldModifierTextBox" BorderBrush="#FFB74D" Padding="2"/>
 
-                <TextBlock Grid.Row="6" Text="Шанс появления:"/>
-                <TextBox Grid.Row="6" Grid.Column="1" Name="SpawnChanceTextBox"/>
+                <TextBlock Grid.Row="6" Text="Шанс появления:" VerticalAlignment="Center" Foreground="#E65100"/>
+                <TextBox Grid.Row="6" Grid.Column="1" Name="SpawnChanceTextBox" BorderBrush="#FFB74D" Padding="2"/>
+
+                <TextBlock Grid.Row="7" Text="Тип противника:" VerticalAlignment="Center" FontWeight="Bold" Foreground="#E65100"/>
+                <ComboBox Grid.Row="7" Grid.Column="1" Name="TypeComboBox" SelectionChanged="TypeComboBox_SelectionChanged" BorderBrush="#FFB74D" Padding="2">
+                    <ComboBoxItem Content="Обычный" IsSelected="True"/>
+                    <ComboBoxItem Content="Бронированный"/>
+                    <ComboBoxItem Content="Лечащийся"/>
+                </ComboBox>
+
+                <TextBlock Grid.Row="8" x:Name="ArmorLabel" Text="Броня (0.0 - 0.9):" VerticalAlignment="Center" Foreground="#E65100" Visibility="Collapsed"/>
+                <TextBox Grid.Row="8" Grid.Column="1" x:Name="ArmorTextBox" Text="0,5" BorderBrush="#FFB74D" Padding="2" Visibility="Collapsed"/>
             </Grid>
 
-            <!-- Первый ряд кнопок редактора -->
-            <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
-                <Button Content="Обновить" Click="UpdateButton_Click" Padding="10,5" Height="40"/>
-                <Button Content="Загрузить иконки" Click="LoadIconsButton_Click" Margin="10,0,0,0" Padding="5"/>
-                <Button Content="Добавить" Click="AddButton_Click" Margin="10,0,0,0" Padding="15,5"/>
-                <Button Content="Удалить" Click="RemoveButton_Click" Margin="10,0,0,0" Padding="10,5"/>
-                <Button Content="Сохранить" Click="SaveButton_Click" Margin="10,0,0,0" Padding="10,5"/>
-                <Button Content="Загрузить" Click="LoadButton_Click" Margin="10,0,0,0" Padding="10,5"/>
+            <!-- Блок кнопок -->
+            <WrapPanel Margin="0,20,0,0">
+                <Button Content="Обновить" Click="UpdateButton_Click" Margin="0,0,10,10" Padding="10,5" Background="#FF9800" Foreground="White" BorderBrush="#F57C00"/>
+                <Button Content="Загрузить иконки" Click="LoadIconsButton_Click" Margin="0,0,10,10" Padding="10,5" Background="#FF9800" Foreground="White" BorderBrush="#F57C00"/>
+                <Button Content="Добавить" Click="AddButton_Click" Margin="0,0,10,10" Padding="10,5" Background="#FF9800" Foreground="White" BorderBrush="#F57C00"/>
+                <Button Content="Удалить" Click="RemoveButton_Click" Margin="0,0,10,10" Padding="10,5" Background="#FF9800" Foreground="White" BorderBrush="#F57C00"/>
+                <Button Content="Сохранить" Click="SaveButton_Click" Margin="0,0,10,10" Padding="10,5" Background="#FF9800" Foreground="White" BorderBrush="#F57C00"/>
+                <Button Content="Загрузить" Click="LoadButton_Click" Margin="0,0,10,10" Padding="10,5" Background="#FF9800" Foreground="White" BorderBrush="#F57C00"/>
+            </WrapPanel>
+
+            <!-- Кнопка Играть -->
+            <Button Content="▶ Играть" Click="PlayButton_Click" Margin="0,10,0,0" Height="50" Width="220" HorizontalAlignment="Left" FontSize="20" FontWeight="Bold" Background="#FF5722" Foreground="White" BorderBrush="#BF360C"/>
+        </StackPanel>
+
+        <!-- Правая панель с иконками -->
+        <Border Grid.Column="1" Background="#FFE0B2" Margin="10" CornerRadius="10" BorderBrush="#FF9800" BorderThickness="2">
+            <StackPanel Margin="10">
+                <TextBlock Text="Иконки противников:" FontWeight="Bold" FontSize="16" Foreground="#E65100" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <ListBox Name="IconsListBox" Height="500" SelectionChanged="IconsListBox_SelectionChanged" BorderBrush="#FFB74D" Background="White"/>
+                <TextBlock Text="Главная иконка:" FontWeight="Bold" Margin="0,15,0,5" Foreground="#E65100"/>
+                <Border BorderBrush="#FFB74D" BorderThickness="1" Background="White" HorizontalAlignment="Left" Padding="5">
+                    <Image Name="MainEnemyIcon" Height="80"/>
+                </Border>
             </StackPanel>
-
-            <!-- Второй ряд: отдельная большая кнопка "Играть" -->
-            <Button Content="▶ Играть" Click="PlayButton_Click"
-                    Margin="0,15,0,0" Height="45" Width="200"
-                    HorizontalAlignment="Left"
-                    FontSize="16" FontWeight="Bold"/>
-        </StackPanel>
-
-        <StackPanel Grid.Column="1" Margin="10">
-            <TextBlock Text="Иконки противников:" FontWeight="Bold"/>
-            <ListBox Name="IconsListBox" Height="400" SelectionChanged="IconsListBox_SelectionChanged"/>
-            <TextBlock Text="Главная иконка:" Margin="0,10,0,0"/>
-            <Image Name="MainEnemyIcon" Height="64" HorizontalAlignment="Left"/>
-        </StackPanel>
+        </Border>
     </Grid>
 </Window>

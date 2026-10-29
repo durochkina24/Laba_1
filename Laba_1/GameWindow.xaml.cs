@@ -13,14 +13,14 @@ namespace Laba_1
         private CEnemyTemplateList templates;
         private List<EnemyIcon> icons;
         private Player player;
-        private Enemy currentEnemy;
+        private IEnemy currentEnemy;
         private Random rng = new Random();
         private int stageLevel = 1;
 
         private DispatcherTimer gameTimer;
         private List<CCollectable> activeCollectables = new List<CCollectable>();
         private double spawnTimer = 0;
-        private double spawnInterval = 3.0; // Сферы появляются каждые 3 секунды
+        private double spawnInterval = 3.0;
 
         public GameWindow(CEnemyTemplateList templates, List<EnemyIcon> icons)
         {
@@ -67,7 +67,6 @@ namespace Laba_1
 
         private void SpawnRandomCollectable()
         {
-            // Спавним в случайных местах
             double x = rng.Next(50, 250);
             double y = rng.Next(50, 250);
             Point pos = new Point(x, y);
@@ -100,6 +99,11 @@ namespace Laba_1
             BigNumber reward;
             bool killed = currentEnemy.TakeDamage(dmg, out reward);
 
+            if (currentEnemy is CHealingEnemy healer && healer.JustHealed)
+            {
+                MessageBox.Show($"{currentEnemy.Name} полечился! Урон не прошёл.");
+            }
+
             player.Click();
 
             if (killed)
@@ -122,7 +126,22 @@ namespace Laba_1
             EnemyIcon icon = null;
             foreach (var i in icons) if (i.Name == chosen.IconName) { icon = i; break; }
 
-            currentEnemy = new Enemy(chosen, icon, stageLevel);
+            BigNumber hp = new BigNumber(chosen.BaseLife.ToString()) * Math.Pow(chosen.LifeModifier, stageLevel - 1);
+            BigNumber gold = new BigNumber(chosen.BaseGold.ToString()) * Math.Pow(chosen.GoldModifier, stageLevel - 1);
+
+            if (chosen is CArmoredEnemyTemplate armored)
+            {
+                currentEnemy = EnemyFactory.CreateEnemy("CArmoredEnemy", chosen.Name, hp, gold, armored.Armor);
+            }
+            else if (chosen is CHealingEnemyTemplate healing)
+            {
+                currentEnemy = EnemyFactory.CreateEnemy("CHealingEnemy", chosen.Name, hp, gold, healing.HealChance);
+            }
+            else
+            {
+                currentEnemy = EnemyFactory.CreateEnemy("CNormalEnemy", chosen.Name, hp, gold);
+            }
+
             if (icon != null) EnemyImage.Source = new BitmapImage(new Uri(icon.ImagePath, UriKind.Absolute));
             else EnemyImage.Source = null;
         }
@@ -137,17 +156,15 @@ namespace Laba_1
                 EnemyNameText.Text = currentEnemy.Name;
                 EnemyGoldText.Text = currentEnemy.GoldReward.ToString();
 
-                // Полоска HP
                 double hpPercent = 0;
                 if (!currentEnemy.MaxHitPoints.IsZero())
                 {
-                    // Временный костыль для получения double из BigNumber
                     double maxHp = double.Parse(currentEnemy.MaxHitPoints.ToString());
                     double curHp = double.Parse(currentEnemy.CurrentHitPoints.ToString());
                     hpPercent = (curHp / maxHp) * 100;
                 }
 
-                HpBarFill.Width = (300 * hpPercent) / 100; // 300 - это ширина нашей полоски в XAML минус рамки
+                HpBarFill.Width = (300 * hpPercent) / 100;
                 EnemyHpText.Text = $"{currentEnemy.CurrentHitPoints} / {currentEnemy.MaxHitPoints}";
             }
 

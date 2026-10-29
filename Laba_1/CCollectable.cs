@@ -5,11 +5,11 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace Laba_1
-{
+{     // общий родитель
     public abstract class CCollectable
     {
         protected Point position;
-        protected Grid spriteContainer; // Используем Grid, чтобы наложить текст на кружок
+        protected Grid spriteContainer;
         protected double lifetime;
 
         public UIElement Sprite => spriteContainer;
