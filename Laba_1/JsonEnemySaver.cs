@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Laba_1
 {
-    // 1. Полиморфный конвертер (требование лабы)
+    
     public class EnemyTemplateConverter : JsonConverter<CEnemyTemplate>
     {
         public override CEnemyTemplate Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -19,7 +18,6 @@ namespace Laba_1
                 type = typeElement.GetString();
             }
 
-            // Создаем опции без нашего конвертера, чтобы избежать StackOverflow
             var safeOptions = new JsonSerializerOptions(options);
             for (int i = safeOptions.Converters.Count - 1; i >= 0; i--)
             {
@@ -60,7 +58,7 @@ namespace Laba_1
         }
     }
 
-    // 2. Класс сохранения, реализующий интерфейс
+    
     public class JsonEnemySaver : ISaveList<List<CEnemyTemplate>>
     {
         private readonly JsonSerializerOptions _options;

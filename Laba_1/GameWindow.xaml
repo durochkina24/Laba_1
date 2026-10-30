@@ -9,56 +9,22 @@
             <ColumnDefinition Width="350"/>
         </Grid.ColumnDefinitions>
 
-        <!-- ЛЕВАЯ ПАНЕЛЬ -->
-        <Grid Grid.Column="0" Margin="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+      <StackPanel Grid.Column="0" Margin="20" VerticalAlignment="Top">
+            <TextBlock x:Name="EnemyNameText" FontSize="24" FontWeight="Bold" Text="Имя врага" Foreground="#E65100" Margin="0,0,0,10"/>
 
-            <!-- Верхняя часть с текстом -->
-            <StackPanel Grid.Row="0">
-                <TextBlock x:Name="EnemyNameText" FontSize="24" FontWeight="Bold" Text="Имя врага" Foreground="#E65100" Margin="0,0,0,10"/>
+            <Border Background="#FFE0B2" Height="30" CornerRadius="5" BorderBrush="#FF9800" BorderThickness="2">
+                <Grid>
+                    <Rectangle x:Name="HpBarFill" Fill="#FF5722" HorizontalAlignment="Left" RadiusX="3" RadiusY="3"/>
+                    <TextBlock x:Name="EnemyHpText" Text="100 / 100" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="16"/>
+                </Grid>
+            </Border>
 
-                <Border Background="#FFE0B2" Height="30" CornerRadius="5" BorderBrush="#FF9800" BorderThickness="2">
-                    <Grid>
-                        <Rectangle x:Name="HpBarFill" Fill="#FF5722" HorizontalAlignment="Left" RadiusX="3" RadiusY="3"/>
-                        <TextBlock x:Name="EnemyHpText" Text="100 / 100" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="16"/>
-                    </Grid>
-                </Border>
+            <TextBlock Text="Золото за победу:" FontWeight="Bold" Margin="0,30,0,0" FontSize="16" Foreground="#E65100"/>
+            <TextBlock x:Name="EnemyGoldText" FontSize="20" Foreground="#FF9800" Margin="0,5,0,0" FontWeight="Bold"/>
 
-                <TextBlock Text="Золото за победу:" FontWeight="Bold" Margin="0,30,0,0" FontSize="16" Foreground="#E65100"/>
-                <TextBlock x:Name="EnemyGoldText" FontSize="20" Foreground="#FF9800" Margin="0,5,0,0" FontWeight="Bold"/>
+            <TextBlock x:Name="BonusStatusText" FontSize="16" Foreground="#D32F2F" FontWeight="Bold" Margin="0,15,0,0"/>
+        </StackPanel>
 
-                <TextBlock x:Name="BonusStatusText" FontSize="16" Foreground="#D32F2F" FontWeight="Bold" Margin="0,15,0,0"/>
-            </StackPanel>
-
-            <!-- Хэллоуинская тыква в самом низу -->
-            <Canvas Grid.Row="1" Width="160" Height="160" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,10" IsHitTestVisible="False">
-                <!-- Хвостик -->
-                <Polygon Points="75,35 85,10 80,35" Fill="#4E342E"/>
-                <Polygon Points="70,30 50,15 55,45" Fill="#4CAF50"/>
-
-                <!-- Тело тыквы (дольки) -->
-                <Ellipse Canvas.Left="20" Canvas.Top="40" Width="100" Height="90" Fill="#E65100"/>
-                <Ellipse Canvas.Left="60" Canvas.Top="40" Width="100" Height="90" Fill="#E65100"/>
-                <Ellipse Canvas.Left="40" Canvas.Top="35" Width="100" Height="100" Fill="#FF9800"/>
-
-                <!-- Блики для объема -->
-                <Ellipse Canvas.Left="65" Canvas.Top="45" Width="30" Height="80" Fill="#FFB74D" Opacity="0.6"/>
-                <Ellipse Canvas.Left="95" Canvas.Top="45" Width="20" Height="80" Fill="#FFB74D" Opacity="0.4"/>
-                <Ellipse Canvas.Left="45" Canvas.Top="45" Width="20" Height="80" Fill="#FFB74D" Opacity="0.4"/>
-
-                <!-- Глаза (треугольники) -->
-                <Polygon Points="55,65 65,55 75,70" Fill="#3E2723"/>
-                <Polygon Points="95,65 105,55 115,70" Fill="#3E2723"/>
-
-                <!-- Зубастая улыбка -->
-                <Path Data="M 55,85 Q 85,105 115,85 L 105,95 L 95,90 L 85,100 L 75,90 L 65,95 Z" Fill="#3E2723"/>
-            </Canvas>
-        </Grid>
-
-        <!-- ЦЕНТРАЛЬНАЯ ПАНЕЛЬ (моб и сферы) -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -73,7 +39,7 @@
             <TextBlock Grid.Row="1" x:Name="CooldownText" Text="ГОТОВ К УДАРУ" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" FontWeight="Bold" Foreground="#4CAF50"/>
         </Grid>
 
-        <!-- ПРАВАЯ ПАНЕЛЬ -->
+        
         <StackPanel Grid.Column="2" Margin="20" VerticalAlignment="Top">
             <TextBlock Text="Уровень:" FontWeight="Bold" Foreground="#E65100"/>
             <TextBlock x:Name="LevelText" FontSize="20"/>
